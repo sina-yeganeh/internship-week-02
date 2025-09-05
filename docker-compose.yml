@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  jump-server:
+    build: ./jump-server
+    container_name: jump-server
+    ports:
+      - "2222:22"
+    networks:
+      - dev-network
+    stdin_open: true
+    tty: true
+
+  dev1:
+    build: ./dev1
+    container_name: dev1
+    volumes:
+      - ./dev1:/app
+      - ~/.ssh:/root/.ssh
+    networks:
+      - dev-network
+    stdin_open: true
+    tty: true
+    depends_on:
+      - jump-server
+
+  dev2:
+    build: ./dev2
+    container_name: dev2
+    volumes:
+      - ./dev2:/app
+      - ~/.ssh:/root/.ssh
+    networks:
+      - dev-network
+    stdin_open: true
+    tty: true
+    depends_on:
+      - jump-server
+
+  stage-server:
+    build: ./stage-server
+    container_name: stage-server
+    ports:
+      - "2200:22"
+    networks:
+      - dev-network
+    stdin_open: true
+    tty: true
+    depends_on:
+      - jump-server
+
+volumes:
+  dev1-data:
+  dev2-data:
+  jump-server-data:
+  stage-server-data:
